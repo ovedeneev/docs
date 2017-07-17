@@ -1,0 +1,56 @@
+=============================================
+find wp-content/plugins/ -maxdepth 1 -type d | wc -l
+find wp-content/plugins/ -maxdepth 1 -type d | cut -d"/" -f3 | grep -v ^$ | wc -l
+
+mv wp-content/plugins/ wp-content/.plugins/
+
+mv wp-content/.plugins/ wp-content/plugins/
+
+ls -lart wp-content/plugins/
+=============================================
+-- Top directories by files count
+du --inodes -S | sort -rh | head
+
+du --inodes -S wp-content | sort -rh | head
+=============================================
+-- CMS versions
+grep wp_version /home/*/public_html/wp-includes/version.php | grep -v global
+
+grep wp_version wp-includes/version.php | grep -v global
+=============================================
+-- DB info
+egrep "DB_NAME|DB_USER|DB_PASSWORD" wp-config.php
+=============================================
+-- PLUGINS names
+find wp-content/plugins/ -maxdepth 1 -type d | cut -d"/" -f3 | grep -v ^$ | wc -l
+
+-- syscalls 'open' count by plugins
+for i in $(find wp-content/plugins/ -maxdepth 1 -type d | cut -d"/" -f3 | grep -v ^$); do grep $i /root/support/strace_`date +%Y-%m-%d` | grep ^open | wc -l | xargs echo -n; echo " $i"; done | sort -rn
+
+-- syscalls 'open' and 'lstat' count by plugins
+for i in $(find wp-content/plugins/ -maxdepth 1 -type d | cut -d"/" -f3 | grep -v ^$); do grep $i /root/support/strace_`date +%Y-%m-%d` | egrep "^open|^lstat" | wc -l | xargs echo -n; echo " $i"; done | sort -rn
+
+-- open, lstat, access syscalls
+for i in $(find wp-content/plugins/ -maxdepth 1 -type d | cut -d"/" -f3 | grep -v ^$); do grep $i /root/support/strace_`date +%Y-%m-%d` | egrep "^open|^lstat|^access" | wc -l | xargs echo -n; echo " $i"; done | sort -rn
+=============================================
+-- THEMES names
+find wp-content/themes/ -maxdepth 1 -type d | cut -d"/" -f3 | grep -v ^$
+
+-- syscalls 'open' count
+for i in $(find wp-content/themes/ -maxdepth 1 -type d | cut -d"/" -f3 | grep -v ^$); do grep $i /root/support/strace_`date +%Y-%m-%d` | grep ^open | wc -l | xargs echo -n; echo " $i"; done | sort -rn
+
+-- syscalls 'open' and 'lstat' count
+for i in $(find wp-content/themes/ -maxdepth 1 -type d | cut -d"/" -f3 | grep -v ^$); do grep $i /root/support/strace_`date +%Y-%m-%d` | egrep "^open|^lstat" | wc -l | xargs echo -n; echo " $i"; done | sort -rn
+
+-- open, lstat, access syscalls
+for i in $(find wp-content/themes/ -maxdepth 1 -type d | cut -d"/" -f3 | grep -v ^$); do grep $i /root/support/strace_`date +%Y-%m-%d` | egrep "^open|^lstat|^access" | wc -l | xargs echo -n; echo " $i"; done | sort -rn
+=============================================
+-- strace
+strace -c php -q index.php
+strace -o /root/support/strace_`date +%Y-%m-%d` php -q index.php
+
+strace -T -o /root/support/strace_`date +%Y-%m-%d` php -q index.php
+awk '{print $NF,$0}' /root/support/strace_`date +%Y-%m-%d` | sort -r | head -20
+=============================================
+--
+=============================================
